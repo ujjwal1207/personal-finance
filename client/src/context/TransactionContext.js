@@ -7,7 +7,6 @@ import React, {
 } from 'react'
 import axios from 'axios'
 
-// API base URL configuration
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
 
@@ -105,7 +104,6 @@ export const TransactionProvider = ({ children }) => {
       dispatch({ type: 'SET_LOADING', payload: true })
       const queryParams = new URLSearchParams()
 
-      // Use current filters from state
       Object.entries(state.filters).forEach(([key, value]) => {
         if (value && value !== 'all') {
           queryParams.append(key, value)
@@ -121,7 +119,6 @@ export const TransactionProvider = ({ children }) => {
         type: 'SET_ERROR',
         payload: error.response?.data?.message || 'Failed to fetch transactions'
       })
-      // Fallback to localStorage if API fails
       const saved = localStorage.getItem('transactions')
       if (saved) {
         try {
@@ -132,7 +129,7 @@ export const TransactionProvider = ({ children }) => {
         }
       }
     }
-  }, []) // Remove state.filters dependency to prevent infinite loop
+  }, []) 
 
   const addTransaction = useCallback(async transactionData => {
     try {

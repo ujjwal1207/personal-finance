@@ -9,7 +9,7 @@ const AddTransaction = () => {
   const [formData, setFormData] = useState({
     title: '',
     amount: '',
-    date: new Date().toISOString().split('T')[0], // Today's date
+    date: new Date().toISOString().split('T')[0],
     category: 'Other'
   })
 
