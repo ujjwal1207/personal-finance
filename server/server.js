@@ -7,21 +7,52 @@ require('dotenv').config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
+// CORS configuration using environment variables
+const getAllowedOrigins = () => {
+  const origins = [
+    'http://localhost:3000' // Development default
+  ]
+
+  // Add custom origins from environment variable
+  if (process.env.ALLOWED_ORIGINS) {
+    const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map(origin =>
+      origin.trim()
+    )
+    origins.push(...envOrigins)
+  }
+
+  return origins
+}
+
+const corsOptions = {
+  origin: getAllowedOrigins(),
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+
 // Middleware
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// MongoDB Connection
+// Database configuration
 const MONGODB_URI =
   process.env.MONGODB_URI ||
   'mongodb://localhost:27017/personal-finance-tracker'
 
+// Add database name based on environment
+const dbName =
+  process.env.NODE_ENV === 'production'
+    ? 'personal-finance-tracker-prod'
+    : 'personal-finance-tracker-dev'
+const mongooseOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  dbName: dbName
+}
+
 mongoose
-  .connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+  .connect(MONGODB_URI, mongooseOptions)
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.error('MongoDB connection error:', err))
 
@@ -40,7 +71,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' })
 })
 
-// 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' })
 })

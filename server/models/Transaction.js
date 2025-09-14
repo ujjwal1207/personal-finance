@@ -67,7 +67,6 @@ transactionSchema.methods.getFormattedAmount = function () {
   }).format(Math.abs(this.amount))
 }
 
-// Static method to get transactions by date range
 transactionSchema.statics.getByDateRange = function (startDate, endDate) {
   return this.find({
     date: {

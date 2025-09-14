@@ -197,7 +197,31 @@ GET /transactions/stats/summary
    - Backend API: http://localhost:5000
    - API Health Check: http://localhost:5000/api/health
 
-## 🎯 Usage Guide
+## � Live Deployment
+
+### Deploy to Render (Recommended)
+
+This application is configured for easy deployment to Render with both frontend and backend services.
+
+**Quick Deploy:**
+1. Fork/clone this repository to your GitHub
+2. Follow the detailed [Deployment Guide](./DEPLOYMENT.md)
+3. Your app will be live at `https://your-app-name.onrender.com`
+
+**Live Demo:**
+- 🌐 **Frontend**: `https://personal-finance-tracker-client.onrender.com`
+- 🔧 **API**: `https://personal-finance-tracker-api.onrender.com`
+
+### Deployment Features
+- ✅ **Automatic Deployments** - Updates on every push to main branch
+- ✅ **Environment Management** - Separate dev/prod configurations  
+- ✅ **MongoDB Atlas Integration** - Cloud database ready
+- ✅ **CORS Configuration** - Production-ready security settings
+- ✅ **Static Site Optimization** - Fast frontend delivery
+
+> 📖 **Detailed Instructions**: See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step deployment guide
+
+## �🎯 Usage Guide
 
 ### Adding Transactions
 1. Navigate to "Add Transaction" or use the dashboard button

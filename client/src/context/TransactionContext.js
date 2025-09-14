@@ -7,6 +7,10 @@ import React, {
 } from 'react'
 import axios from 'axios'
 
+// API base URL configuration
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
+
 const TransactionContext = createContext()
 
 const initialState = {
@@ -108,7 +112,9 @@ export const TransactionProvider = ({ children }) => {
         }
       })
 
-      const response = await axios.get(`/api/transactions?${queryParams}`)
+      const response = await axios.get(
+        `${API_BASE_URL}/transactions?${queryParams}`
+      )
       dispatch({ type: 'SET_TRANSACTIONS', payload: response.data })
     } catch (error) {
       dispatch({
@@ -131,7 +137,10 @@ export const TransactionProvider = ({ children }) => {
   const addTransaction = useCallback(async transactionData => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      const response = await axios.post('/api/transactions', transactionData)
+      const response = await axios.post(
+        `${API_BASE_URL}/transactions`,
+        transactionData
+      )
       dispatch({ type: 'ADD_TRANSACTION', payload: response.data })
       return response.data
     } catch (error) {
@@ -155,7 +164,7 @@ export const TransactionProvider = ({ children }) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
       const response = await axios.put(
-        `/api/transactions/${id}`,
+        `${API_BASE_URL}/transactions/${id}`,
         transactionData
       )
       dispatch({ type: 'UPDATE_TRANSACTION', payload: response.data })
@@ -175,7 +184,7 @@ export const TransactionProvider = ({ children }) => {
   const deleteTransaction = async id => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      await axios.delete(`/api/transactions/${id}`)
+      await axios.delete(`${API_BASE_URL}/transactions/${id}`)
       dispatch({ type: 'DELETE_TRANSACTION', payload: id })
     } catch (error) {
       dispatch({
