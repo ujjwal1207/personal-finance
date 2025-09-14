@@ -1,19 +1,71 @@
 # Personal Finance Tracker 💰
 
-A full-stack MERN application for tracking personal income and expenses with real-time analytics and visualizations.
+A full-stack MERN application for tracking personal income and expenses with real-time analytics, visualizations, and secure JWT authentication.
 
 ![Finance Tracker](https://img.shields.io/badge/MERN-Stack-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.0.0-orange)
+![License](https://img.shields.io/badge/license-MIT-7. **Access the application**
+   - F> 📖 **Detailed Instructions**: See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step deployment guide
+
+## 🔐 Authentication Guide
+
+### Getting Started with Authentication
+
+1. **Sign Up**
+   - Visit the application homepage
+   - Click "Sign Up" to create a new account
+   - Enter your email and a secure password
+   - You'll be automatically logged in after successful registration
+
+2. **Login**
+   - If you already have an account, click "Login"
+   - Enter your email and password
+   - You'll be redirected to your personal dashboard
+
+3. **Using the Application**
+   - All your transactions are private and user-specific
+   - You can only see and manage your own financial data
+   - Your session will persist until you logout or the token expires (7 days)
+
+4. **Logout**
+   - Click the "Logout" button in the header to end your session
+   - You'll be redirected to the login page
+
+### Security Features
+- 🔒 **Encrypted Passwords** - All passwords are hashed using bcrypt
+- 🎫 **JWT Tokens** - Secure token-based authentication with 7-day expiration
+- 🛡️ **Protected Routes** - All transaction data requires authentication
+- 🔐 **User Isolation** - Users can only access their own data
+
+## 🎯 Usage Guidetend: http://localhost:3000
+   - Backend API: http://localhost:5000
+   - API Health Check: http://localhost:5000/api/health
+
+## 🌍 Live Deployment
+
+**Current Deployment:**
+- **Frontend**: [https://personal-finance-98x3.onrender.com](https://personal-finance-98x3.onrender.com)
+- **Backend**: [https://personal-finance-backend-hf4k.onrender.com](https://personal-finance-backend-hf4k.onrender.com)
+
+### Deploy to Render (Recommended)![Version](https://img.shields.io/badge/version-2.0.0-orange)
+![Authentication](https://img.shields.io/badge/Auth-JWT-red)
 
 ## 🚀 Features
 
 ### Core Features
+- ✅ **User Authentication** - Secure JWT-based login and signup system
+- ✅ **Protected Routes** - User-specific data access and route protection
 - ✅ **Complete CRUD Operations** - Create, Read, Update, Delete transactions
 - ✅ **Real-time Balance Tracking** - Automatic calculation of income, expenses, and balance
 - ✅ **Category Management** - Organize transactions by predefined categories
 - ✅ **Date-based Organization** - Track transactions by date with filtering
 - ✅ **Responsive Design** - Works seamlessly on desktop and mobile devices
+
+### Security Features
+- 🔐 **JWT Authentication** - Secure token-based authentication
+- 🔒 **Password Hashing** - Bcrypt password encryption
+- 👤 **User Sessions** - Persistent login sessions with token validation
+- 🛡️ **Protected API Routes** - All transaction routes require authentication
+- 🚪 **Automatic Redirects** - Redirect to login when not authenticated
 
 ### Bonus Features
 - 🎯 **Advanced Filtering** - Filter by category, type, and date range
@@ -35,21 +87,108 @@ A full-stack MERN application for tracking personal income and expenses with rea
 - **Node.js** - Runtime environment
 - **Express.js** 4.18.2 - Web framework
 - **MongoDB** with **Mongoose** 7.5.0 - Database and ODM
+- **JWT** - JSON Web Token authentication
+- **bcryptjs** - Password hashing and encryption
 - **CORS** - Cross-origin resource sharing
 - **dotenv** - Environment variable management
 
+## 🌐 Live Demo
+
+- **Frontend**: [https://personal-finance-98x3.onrender.com](https://personal-finance-98x3.onrender.com)
+- **Backend API**: [https://personal-finance-backend-hf4k.onrender.com](https://personal-finance-backend-hf4k.onrender.com)
+
 ## 📋 API Documentation
 
-### Base URL
+### Base URLs
+**Production:** `https://personal-finance-backend-hf4k.onrender.com/api`
+**Development:** `http://localhost:5000/api`
+
+### Authentication
+All transaction routes require authentication. Include the JWT token in the Authorization header:
 ```
-http://localhost:5000/api
+Authorization: Bearer <your_jwt_token>
 ```
 
-### Endpoints
+### Authentication Endpoints
+
+#### User Signup
+```http
+POST /auth/signup
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "securePassword"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "jwt_token_here",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com"
+  }
+}
+```
+
+#### User Login
+```http
+POST /auth/login
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "securePassword"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "jwt_token_here",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com"
+  }
+}
+```
+
+#### Get Current User Profile
+```http
+GET /auth/me
+```
+
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
+```
+
+**Response:**
+```json
+{
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com"
+  }
+}
+```
+
+### Transaction Endpoints
 
 #### Get All Transactions
 ```http
 GET /transactions
+```
+
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
 ```
 
 **Query Parameters:**
@@ -169,7 +308,15 @@ GET /transactions/stats/summary
    ```env
    PORT=5000
    MONGODB_URI=mongodb://localhost:27017/personal-finance-tracker
+   JWT_SECRET=your_super_secure_jwt_secret_key_here
    NODE_ENV=development
+   ```
+
+   For production deployment, also set:
+   ```env
+   JWT_SECRET=your_production_jwt_secret
+   MONGODB_URI=your_mongodb_atlas_connection_string
+   CLIENT_URL=https://personal-finance-98x3.onrender.com
    ```
 
 5. **Start MongoDB**

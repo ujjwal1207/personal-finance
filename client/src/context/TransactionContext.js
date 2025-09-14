@@ -6,6 +6,7 @@ import React, {
   useCallback
 } from 'react'
 import axios from 'axios'
+import { useAuth } from './AuthContext'
 
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
@@ -84,6 +85,12 @@ const transactionReducer = (state, action) => {
 
 export const TransactionProvider = ({ children }) => {
   const [state, dispatch] = useReducer(transactionReducer, initialState)
+  const { token } = useAuth()
+
+  // Create auth headers if token exists
+  const getAuthHeaders = () => {
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -111,7 +118,8 @@ export const TransactionProvider = ({ children }) => {
       })
 
       const response = await axios.get(
-        `${API_BASE_URL}/transactions?${queryParams}`
+        `${API_BASE_URL}/transactions?${queryParams}`,
+        { headers: getAuthHeaders() }
       )
       dispatch({ type: 'SET_TRANSACTIONS', payload: response.data })
     } catch (error) {
@@ -129,40 +137,45 @@ export const TransactionProvider = ({ children }) => {
         }
       }
     }
-  }, []) 
+  }, [token])
 
-  const addTransaction = useCallback(async transactionData => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      const response = await axios.post(
-        `${API_BASE_URL}/transactions`,
-        transactionData
-      )
-      dispatch({ type: 'ADD_TRANSACTION', payload: response.data })
-      return response.data
-    } catch (error) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: error.response?.data?.message || 'Failed to add transaction'
-      })
-      // Add to localStorage as fallback
-      const tempTransaction = {
-        _id: Date.now().toString(),
-        ...transactionData,
-        date: transactionData.date || new Date().toISOString(),
-        createdAt: new Date().toISOString()
+  const addTransaction = useCallback(
+    async transactionData => {
+      try {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        const response = await axios.post(
+          `${API_BASE_URL}/transactions`,
+          transactionData,
+          { headers: getAuthHeaders() }
+        )
+        dispatch({ type: 'ADD_TRANSACTION', payload: response.data })
+        return response.data
+      } catch (error) {
+        dispatch({
+          type: 'SET_ERROR',
+          payload: error.response?.data?.message || 'Failed to add transaction'
+        })
+        // Add to localStorage as fallback
+        const tempTransaction = {
+          _id: Date.now().toString(),
+          ...transactionData,
+          date: transactionData.date || new Date().toISOString(),
+          createdAt: new Date().toISOString()
+        }
+        dispatch({ type: 'ADD_TRANSACTION', payload: tempTransaction })
+        return tempTransaction
       }
-      dispatch({ type: 'ADD_TRANSACTION', payload: tempTransaction })
-      return tempTransaction
-    }
-  }, [])
+    },
+    [token]
+  )
 
   const updateTransaction = async (id, transactionData) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
       const response = await axios.put(
         `${API_BASE_URL}/transactions/${id}`,
-        transactionData
+        transactionData,
+        { headers: getAuthHeaders() }
       )
       dispatch({ type: 'UPDATE_TRANSACTION', payload: response.data })
       return response.data
@@ -181,7 +194,9 @@ export const TransactionProvider = ({ children }) => {
   const deleteTransaction = async id => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      await axios.delete(`${API_BASE_URL}/transactions/${id}`)
+      await axios.delete(`${API_BASE_URL}/transactions/${id}`, {
+        headers: getAuthHeaders()
+      })
       dispatch({ type: 'DELETE_TRANSACTION', payload: id })
     } catch (error) {
       dispatch({

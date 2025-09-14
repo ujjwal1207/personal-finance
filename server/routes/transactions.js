@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const Transaction = require('../models/Transaction')
+const { protect } = require('../middleware/auth')
 
 // @route   GET /api/transactions
-// @desc    Get all transactions
-// @access  Public
-router.get('/', async (req, res) => {
+// @desc    Get all transactions for authenticated user
+// @access  Private
+router.get('/', protect, async (req, res) => {
   try {
     const {
       page = 1,
@@ -16,7 +17,9 @@ router.get('/', async (req, res) => {
       endDate
     } = req.query
 
-    let query = {}
+    let query = {
+      user: req.user._id // Filter by authenticated user
+    }
 
     // Filter by category
     if (category && category !== 'all') {
@@ -71,11 +74,14 @@ router.get('/', async (req, res) => {
 })
 
 // @route   GET /api/transactions/:id
-// @desc    Get single transaction
-// @access  Public
-router.get('/:id', async (req, res) => {
+// @desc    Get single transaction for authenticated user
+// @access  Private
+router.get('/:id', protect, async (req, res) => {
   try {
-    const transaction = await Transaction.findById(req.params.id)
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    })
 
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' })
@@ -92,9 +98,9 @@ router.get('/:id', async (req, res) => {
 })
 
 // @route   POST /api/transactions
-// @desc    Create new transaction
-// @access  Public
-router.post('/', async (req, res) => {
+// @desc    Create new transaction for authenticated user
+// @access  Private
+router.post('/', protect, async (req, res) => {
   try {
     const { title, amount, date, category } = req.body
 
@@ -112,6 +118,7 @@ router.post('/', async (req, res) => {
     }
 
     const transaction = new Transaction({
+      user: req.user._id,
       title: title.trim(),
       amount: parseFloat(amount),
       date: date ? new Date(date) : new Date(),
@@ -131,14 +138,17 @@ router.post('/', async (req, res) => {
 })
 
 // @route   PUT /api/transactions/:id
-// @desc    Update transaction
-// @access  Public
-router.put('/:id', async (req, res) => {
+// @desc    Update transaction for authenticated user
+// @access  Private
+router.put('/:id', protect, async (req, res) => {
   try {
     const { title, amount, date, category } = req.body
 
-    // Find transaction
-    let transaction = await Transaction.findById(req.params.id)
+    // Find transaction for this user
+    let transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    })
 
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' })
@@ -173,11 +183,15 @@ router.put('/:id', async (req, res) => {
 })
 
 // @route   DELETE /api/transactions/:id
-// @desc    Delete transaction
-// @access  Public
-router.delete('/:id', async (req, res) => {
+// @desc    Delete transaction for authenticated user
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
   try {
-    const transaction = await Transaction.findById(req.params.id)
+    // Find transaction for this user
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    })
 
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' })
@@ -195,13 +209,13 @@ router.delete('/:id', async (req, res) => {
 })
 
 // @route   GET /api/transactions/stats/summary
-// @desc    Get transaction statistics
-// @access  Public
-router.get('/stats/summary', async (req, res) => {
+// @desc    Get transaction statistics for authenticated user
+// @access  Private
+router.get('/stats/summary', protect, async (req, res) => {
   try {
     const { startDate, endDate } = req.query
 
-    let query = {}
+    let query = { user: req.user._id }
     if (startDate || endDate) {
       query.date = {}
       if (startDate) query.date.$gte = new Date(startDate)

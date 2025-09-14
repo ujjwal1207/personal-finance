@@ -57,7 +57,10 @@ mongoose
   .catch(err => console.error('MongoDB connection error:', err))
 
 // Routes
+const authRoutes = require('./routes/auth')
 const transactionRoutes = require('./routes/transactions')
+
+app.use('/api/auth', authRoutes)
 app.use('/api/transactions', transactionRoutes)
 
 // Health check route

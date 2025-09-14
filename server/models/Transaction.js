@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 
 const transactionSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User is required']
+    },
     title: {
       type: String,
       required: [true, 'Title is required'],
@@ -53,13 +58,11 @@ const transactionSchema = new mongoose.Schema(
   }
 )
 
-// Virtual for transaction type based on amount
 transactionSchema.pre('save', function (next) {
   this.type = this.amount > 0 ? 'income' : 'expense'
   next()
 })
 
-// Instance method to format amount for display
 transactionSchema.methods.getFormattedAmount = function () {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
