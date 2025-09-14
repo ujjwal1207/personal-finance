@@ -11,6 +11,8 @@ import axios from 'axios'
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
 
+console.log('AuthContext API_BASE_URL:', API_BASE_URL)
+
 const AuthContext = createContext()
 
 const initialState = {
@@ -106,6 +108,7 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(
     async (email, password) => {
       try {
+        console.log('Attempting login with URL:', `${API_BASE_URL}/auth/login`)
         dispatch({ type: 'SET_LOADING', payload: true })
         const response = await axios.post(`${API_BASE_URL}/auth/login`, {
           email,
@@ -123,6 +126,8 @@ export const AuthProvider = ({ children }) => {
         setAuthToken(response.data.token)
         return { success: true, message: response.data.message }
       } catch (error) {
+        console.error('Login error:', error)
+        console.error('Error response:', error.response)
         const errorMessage = error.response?.data?.message || 'Login failed'
         dispatch({ type: 'SET_ERROR', payload: errorMessage })
         return { success: false, message: errorMessage }
