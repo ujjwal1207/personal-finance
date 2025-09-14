@@ -147,8 +147,8 @@ GET /transactions/stats/summary
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/personal-finance-tracker.git
-   cd personal-finance-tracker
+   git clone https://github.com/ujjwal1207/personal-finance.git
+   cd personal-finance
    ```
 
 2. **Install server dependencies**
