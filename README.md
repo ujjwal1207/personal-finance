@@ -182,13 +182,6 @@ GET /transactions/stats/summary
 
 6. **Run the application**
    
-   **Option 1: Run both simultaneously (recommended)**
-   ```bash
-   # From project root
-   npm run dev
-   ```
-   
-   **Option 2: Run separately**
    ```bash
    # Terminal 1 - Start backend
    cd server
